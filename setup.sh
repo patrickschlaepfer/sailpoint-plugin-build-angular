@@ -1,4 +1,8 @@
 #!/bin/bash
+ROOT_PROJECT_NAME="scaffolding_root"
+PLUGIN_NAME="PluginName"
+PLUGIN_DISPLAY_NAME="Plugin Display Name"
+
 
 # remove all gradle files
 rm -rf .gradle
@@ -20,7 +24,7 @@ gradle wrapper --gradle-version 4.1
 
 # Will download gradle-4.1-bin.zip
 cat <<EOF > settings.gradle
-rootProject.name = 'scaffolding'
+rootProject.name = '$ROOT_PROJECT_NAME'
 
 include 'plugin'
 include 'restapi'
@@ -29,8 +33,8 @@ EOF
 
 cat <<EOF > gradle.properties
 version = 1.1.0-SNAPSHOT
-pluginName = ScaffoldingPlugin
-pluginDisplayName = Scaffolding Plugin
+pluginName = $PLUGIN_NAME
+pluginDisplayName = $PLUGIN_DISPLAY_NAME
 
 // sandbox root url including credentials
 distUrl = http://spadmin:admin@localhost:8080/identityiq
