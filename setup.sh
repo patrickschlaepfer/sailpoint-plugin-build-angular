@@ -2,11 +2,14 @@
 ROOT_PROJECT_NAME="scaffolding_root"
 PLUGIN_NAME="PluginName"
 PLUGIN_DISPLAY_NAME="Plugin Display Name"
+PLUGIN_VERSION="1.0.0-SNAPSHOT"
+SOURCECOMPATIBILITY="1.8"
+TARGETCOMPATIBILITY="1.8"
 
 read -p "This script will delete all sources. Do you want to continue (y/n)? " answer
 case ${answer:0:1} in
     y|Y )
-        echo Yes
+        echo Removing source and rebuilding
     ;;
     * )
         echo Exiting
@@ -26,6 +29,8 @@ rm -f gradle.properties
 rm -rf restapi
 rm -rf plugin
 
+echo "**** Getting and installing gradle"
+
 # get gradle
 gradle init
 gradle wrapper --gradle-version 4.1
@@ -43,7 +48,7 @@ include 'ng2page'
 EOF
 
 cat <<EOF > gradle.properties
-version = 1.1.0-SNAPSHOT
+version = $VERSION
 pluginName = $PLUGIN_NAME
 pluginDisplayName = $PLUGIN_DISPLAY_NAME
 
@@ -93,6 +98,11 @@ task deploy(type: Exec, dependsOn: build) {
 }
 EOF
 
+#
+# Creating restapi
+#
+echo "**** Creating restapi structure"
+
 mkdir -p restapi/src/main/java/sailpoint/plugin/restapi
 mkdir -p restapi/src/test/java
 
@@ -123,6 +133,10 @@ jar {
 }
 EOF
 
+#
+# Creating plugin
+#
+echo "**** Creating plugin structure"
 mkdir -p plugin/src/import/install
 mkdir -p plugin/src/import/upgrade
 mkdir -p plugin/src/ui/css
@@ -140,6 +154,50 @@ task build(type: Copy) {
     into('build/plugin')
     filter(ReplaceTokens, tokens: [VERSION: version, PluginName: pluginName])
 }
+EOF
+
+cat <<EOF > plugin/src/manifest.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Plugin certificationLevel="None" displayName="$PLUGIN_DISPLAY_NAME" minSystemVersion="7.1" maxSystemVersion="7.1" name="$PLUGIN_NAME" version="@VERSION@">
+  <Attributes>
+    <Map>
+      <entry key="minUpgradableVersion" value="1.0" />
+      <entry key="fullPage">
+        <value>
+          <FullPage title="$PLUGIN_DISPLAY_NAME" />
+        </value>
+      </entry>
+      <entry key="restResources">
+        <value>
+          <List>
+            <String>sailpoint.plugin.rest.ScaffoldingPluginResource</String>
+          </List>
+        </value>
+      </entry>
+      <entry key="snippets">
+        <value>
+          <List>
+            <Snippet regexPattern=".*identity\.jsf.*">
+              <Scripts>
+                <String>ui/js/identity-page-snippet.js</String>
+              </Scripts>
+              <StyleSheets>
+              </StyleSheets>
+            </Snippet>
+            <Snippet regexPattern=".*debug\.jsf.*">
+              <Scripts>
+                <String>ui/js/debug-page-snippet.js</String>
+              </Scripts>
+              <StyleSheets>
+              </StyleSheets>
+            </Snippet>
+          </List>
+        </value>
+      </entry>
+    </Map>
+  </Attributes>
+</Plugin>
 EOF
 
 # npm install -g angular-cli@latest
