@@ -3,6 +3,17 @@ ROOT_PROJECT_NAME="scaffolding_root"
 PLUGIN_NAME="PluginName"
 PLUGIN_DISPLAY_NAME="Plugin Display Name"
 
+read -p "This script will delete all sources. Do you want to continue (y/n)? " answer
+case ${answer:0:1} in
+    y|Y )
+        echo Yes
+    ;;
+    * )
+        echo Exiting
+        exit 1
+    ;;
+esac
+
 
 # remove all gradle files
 rm -rf .gradle
@@ -130,3 +141,5 @@ task build(type: Copy) {
     filter(ReplaceTokens, tokens: [VERSION: version, PluginName: pluginName])
 }
 EOF
+
+# npm install -g angular-cli@latest
