@@ -109,8 +109,8 @@ mkdir -p restapi/src/test/java
 cat <<EOF > restapi/build.gradle
 apply plugin: 'java-library'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = $SOURCECOMPATIBILITY
+targetCompatibility = $TARGETCOMPATIBILITY
 
 dependencies {
   // This dependency is used internally, and not exposed to consumers on their own compile classpath.
@@ -200,4 +200,7 @@ cat <<EOF > plugin/src/manifest.xml
 </Plugin>
 EOF
 
-# npm install -g angular-cli@latest
+
+npm uninstall -g angular-cli
+npm cache clean
+npm install -g angular-cli@latest
